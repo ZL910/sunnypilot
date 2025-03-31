@@ -532,7 +532,7 @@ class SelfdriveD(CruiseHelper):
     try:
       return int(self.params.get('LongitudinalPersonality'))
     except (ValueError, TypeError):
-      return custom.LongitudinalPersonalitySP.standard
+      return custom.LongitudinalPersonality.standard
 
   def params_thread(self, evt):
     while not evt.is_set():

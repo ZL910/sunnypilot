@@ -2,7 +2,7 @@
 import time
 import numpy as np
 
-from cereal import log, custom
+from cereal import log
 import cereal.messaging as messaging
 from openpilot.common.realtime import Ratekeeper, DT_MDL
 from openpilot.selfdrive.controls.lib.longcontrol import LongCtrlState
@@ -25,7 +25,6 @@ class Plant:
       Plant.car_state = messaging.pub_sock('carState')
       Plant.plan = messaging.sub_sock('longitudinalPlan')
       Plant.messaging_initialized = True
-      Plant.selfdrive_state_sp = messaging.pub_sock('selfdriveStateSP')
 
     self.v_lead_prev = 0.0
 
@@ -64,7 +63,6 @@ class Plant:
     radar = messaging.new_message('radarState')
     control = messaging.new_message('controlsState')
     ss = messaging.new_message('selfdriveState')
-    ss_sp = messaging.new_message('selfdriveStateSP')
     car_state = messaging.new_message('carState')
     lp = messaging.new_message('liveParameters')
     car_control = messaging.new_message('carControl')
@@ -120,7 +118,7 @@ class Plant:
 
     control.controlsState.longControlState = LongCtrlState.pid if self.enabled else LongCtrlState.off
     ss.selfdriveState.experimentalMode = self.e2e
-    ss_sp.selfdriveStateSP.personality = self.personality
+    ss.selfdriveState.personality = self.personality
     control.controlsState.forceDecel = self.force_decel
     car_state.carState.vEgo = float(self.speed)
     car_state.carState.standstill = bool(self.speed < 0.01)
@@ -133,7 +131,6 @@ class Plant:
           'carControl': car_control.carControl,
           'controlsState': control.controlsState,
           'selfdriveState': ss.selfdriveState,
-          'selfdriveStateSP': ss_sp.selfdriveStateSP,
           'liveParameters': lp.liveParameters,
           'modelV2': model.modelV2}
     self.planner.update(sm)
